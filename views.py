@@ -1,24 +1,16 @@
-from flask.views import View, request
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
 
-class Vitals(View):
-    
-    def dispatch_request(self):
-        if request.method == "POST":
-            pass
-        
-        if request.method == "GET":
-            pass
+app = Flask("Sistemas Vitais & Monitoramento")
+app.config['SQLALCHEMY_DATABASE_URI'] = ''
+db = SQLAlchemy(app)
+
+class Vitals(db.Model):
+    id = db.Column()
         
 
-class Device(View):
-    methods = ['GET', 'POST', 'PUT']
-    
-    def dispatch_request(self):
-        if request.method == "GET":
-            pass
-        
-        if request.method == "POST":
-            pass
-        
-        if request.method == "PUT":
-            pass
+class Device(db.Model):
+    pass
+
+class Alerts(db.Model):
+    pass
