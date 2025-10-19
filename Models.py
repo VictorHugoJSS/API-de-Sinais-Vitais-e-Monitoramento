@@ -26,4 +26,15 @@ devices = Table('devices', metadata,
 mapper(Device, devices)
 
 class Alerts(object):
-    pass
+    def __init__(self, alert_type, message):
+        self.alert_type = alert_type
+        self.message = message
+        self.timestamp = datetime.now()
+
+    def to_dict(self):
+        return {
+            'alert_type': self.alert_type,
+            'message': self.message,
+            'timestamp': self.timestamp.strftime("%d %m %Y %H:%M:%S")
+        }
+
