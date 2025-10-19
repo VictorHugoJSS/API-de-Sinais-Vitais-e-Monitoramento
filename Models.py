@@ -32,14 +32,26 @@ mapper(Device, devices)
 
 class Alerts(object):
     def __init__(self, alert_type, message):
+        self.alert_id = str(uuid.uuid4())
         self.alert_type = alert_type
         self.message = message
-        self.timestamp = datetime.now()
+        self.timestamp = datetime.now().strftime("%d %m %Y %H:%M:%S")
 
     def to_dict(self):
         return {
             'alert_type': self.alert_type,
             'message': self.message,
-            'timestamp': self.timestamp.strftime("%d %m %Y %H:%M:%S")
+            'timestamp': self.timestamp
         }
+    def __repr__(self):
+        return f'<Alert {self.alert_type!r}>'
 
+
+alerts_table = Table('alerts', metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('alert_type', String(50)),
+    Column('message', String(255)),
+    Column('timestamp', String(20))
+)
+
+mapper(Alert, alerts_table)
