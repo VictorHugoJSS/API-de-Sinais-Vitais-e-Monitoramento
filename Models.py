@@ -11,6 +11,18 @@ class Vitals(object):
         self.blood_pressure = blood_pressure
         self.respiratory_rate = respiratory_rate
 
+    def __repr__(self):
+        return f'<Vitals {self.temperature!r}, {self.heart_rate!r}, {self.blood_pressure!r}, {self.respiratory_rate!r}>'
+
+vitals = Table('vitals', metadata,
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('temperature', String(10)),
+    Column('heart_rate', String(10)),
+    Column('blood_pressure', String(10)),
+    Column('respiratory_rate', String(10))
+)
+mapper(Vitals, vitals)
+
 class Device(object):
     query = db_session.query_property()
     
