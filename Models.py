@@ -1,10 +1,15 @@
+import datetime
 from sqlalchemy import Table, Column, Integer, String
 from sqlalchemy.orm import mapper
 from .Database import metadata, db_session
 
 
 class Vitals(object):
-    pass
+    def __init__(self, temperature, heart_rate, blood_pressure, respiratory_rate):
+        self.temperature = temperature
+        self.heart_rate = heart_rate
+        self.blood_pressure = blood_pressure
+        self.respiratory_rate = respiratory_rate
 
 class Device(object):
     query = db_session.query_property()
