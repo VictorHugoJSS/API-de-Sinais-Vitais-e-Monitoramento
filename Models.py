@@ -1,5 +1,5 @@
 import datetime
-from sqlalchemy import Table, Column, Integer, String
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Numeric
 from sqlalchemy.orm import mapper
 from .Database import metadata, db_session
 
@@ -35,10 +35,14 @@ class Device(object):
         return f'<Device {self.deviceName!r}>'
     
 devices = Table('devices', metadata,
-    Column('id', autoincrement=Integer, primary_key=True),
-    Column('Devicename', String(100), unique=True),
-    Column('model', String(10), unique=True),
-    Column('type', String(7))
+    Column('id', primary_key=True),
+    Column('Devicename', String(100)),
+    Column('model', String(20)),
+    Column('type', String(10)),
+    Column('heart_rate', Integer),
+    Column('temperature', Float),
+    Column('blood_pressure', Numeric),
+    Column('respiratory_rate', Numeric)
 )
 mapper(Device, devices)
 
@@ -66,4 +70,4 @@ alerts_table = Table('alerts', metadata,
     Column('timestamp', String(20))
 )
 
-mapper(Alert, alerts_table)
+mapper(Alerts, alerts_table)
