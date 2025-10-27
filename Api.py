@@ -10,6 +10,12 @@ db_session = db_session()
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
+
+@app.route('/api/vitals', methods=['POST'])
+def create_vitals():
+    data = request.json
+    if not data or ('patient_id' or 'temperature' or 'heart_rate' or 'blood_pressure' or 'respiratory rate' or 'timestamp' or 'device_id') not in data:
+        return jsonify({'error': 'Invalid input'}), 400
     
 @app.route('/api/vitals', methods=['GET'])
 def get_vitals():
