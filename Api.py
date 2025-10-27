@@ -16,7 +16,29 @@ def create_vitals():
     data = request.json
     if not data or ('patient_id' or 'temperature' or 'heart_rate' or 'blood_pressure' or 'respiratory rate' or 'timestamp' or 'device_id') not in data:
         return jsonify({'error': 'Invalid input'}), 400
+
+    vitals = Vitals(
+        patient_id=data['patient_id'], temperature=data['temperature'], heart_rate=data['heart_rate'],
+        blood_pressure=data['blood_pressure'], respiratory_rate=data['respiratory_rate'], device_id=data['device_id']
+    )
     
+    try:
+        db_session.add(vitals)
+        db_session.commit()
+    except Exception as e:
+        db_session.rollback()
+        return jsonify({'error': str(e)}), 500
+    
+    return jsonify({
+        'patient_id': vitals.patient_id,
+        'temperature': vitals.temperature,
+        'heart_rate': vitals.heart_rate,
+        'blood_pressure': vitals.blood_pressure,
+        'respiratory_rate': vitals.respiratory_rate,
+        'timestamp': vitals.timestamp,
+        'device_id': vitals.device_id
+    }), 201
+
 @app.route('/api/vitals', methods=['GET'])
 def get_vitals():
     vitals = db_session.query(Vitals).all()

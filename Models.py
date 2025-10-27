@@ -19,7 +19,8 @@ class Vitals(object):
         return f'<Vitals {self.patient_id!r}>'
 
 vitals = Table('vitals', metadata,
-    Column('id', Integer, primary_key=True), # cpf
+    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('patient_id', Integer), #cpf
     Column('temperature', String(10)),
     Column('heart_rate', String(10)),
     Column('blood_pressure', String(10)),
