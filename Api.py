@@ -1,5 +1,6 @@
-from flask import Flask
+from flask import Flask, request, jsonify
 from Database import init_db, db_session
+from Models import  Vitals, Alerts
 
 app = Flask(__name__)
 
@@ -10,9 +11,33 @@ db_session = db_session()
 def shutdown_session(exception=None):
     db_session.remove()
     
-@app.route('/vitals')
-def response():
-    pass
+@app.route('/api/vitals', methods=['GET'])
+def get_vitals():
+    vitals = db_session.query(Vitals).all()
+    return jsonify([{
+        'patient_id': vital.patient_id,
+        'temperature': vital.temperature,
+        'heart_rate': vital.heart_rate,
+        'blood_pressure': vital.blood_pressure,
+        'respiratory_rate': vital.respiratory_rate,
+        'timestamp': vital.timestamp,
+        'device_id': vital.device_id
+    } for vital in vitals]), 200
+
+@app.route('/api/vitals/<patient_id>', methods=['GET'])
+def get_vitals_by_patient(patient_id):
+    vitals = db_session.query(Vitals).filter(Vitals.patient_id == patient_id).all()
+    if not vitals:
+        return jsonify({'error': 'No vitals found for this patient'}), 404
+    return jsonify([{
+        'patient_id': vital.patient_id,
+        'temperature': vital.temperature,
+        'heart_rate': vital.heart_rate,
+        'blood_pressure': vital.blood_pressure,
+        'respiratory_rate': vital.respiratory_rate,
+        'timestamp': vital.timestamp,
+        'device_id': vital.device_id
+    } for vital in vitals]), 200
 
 @app.route('/api/alerts', methods=['POST'])
 def create_alert():
@@ -20,7 +45,7 @@ def create_alert():
     if not data or 'alert_type' not in data or 'message' not in data:
         return jsonify({'error': 'Invalid input'}), 400 
 
-    alert = Alert(data['alert_type'], data['message'])
+    alert = Alerts(data['alert_type'], data['message'])
     
     try:
         db_session.add(alert)
@@ -38,7 +63,7 @@ def create_alert():
 
 @app.route('/api/alerts', methods=['GET'])
 def get_alerts():
-    alerts = db_session.query(Alert).all()
+    alerts = db_session.query(Alerts).all()
     return jsonify([{
         'alert_id': alert.id,
         'alert_type': alert.alert_type,

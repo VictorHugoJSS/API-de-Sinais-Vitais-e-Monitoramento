@@ -1,25 +1,31 @@
 import datetime
+import uuid
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Numeric
 from sqlalchemy.orm import mapper
 from .Database import metadata, db_session
 
 
 class Vitals(object):
-    def __init__(self, temperature, heart_rate, blood_pressure, respiratory_rate):
+    def __init__(self, patient_id, temperature, heart_rate, blood_pressure, respiratory_rate, device_id):
+        self.patient_id = patient_id
         self.temperature = temperature
         self.heart_rate = heart_rate
         self.blood_pressure = blood_pressure
         self.respiratory_rate = respiratory_rate
+        self.timestamp = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        self.device_id = device_id
 
     def __repr__(self):
-        return f'<Vitals {self.temperature!r}, {self.heart_rate!r}, {self.blood_pressure!r}, {self.respiratory_rate!r}>'
+        return f'<Vitals {self.patient_id!r}>'
 
 vitals = Table('vitals', metadata,
-    Column('id', Integer, primary_key=True, autoincrement=True),
+    Column('id', Integer, primary_key=True), # cpf
     Column('temperature', String(10)),
     Column('heart_rate', String(10)),
     Column('blood_pressure', String(10)),
-    Column('respiratory_rate', String(10))
+    Column('respiratory_rate', String(10)),
+    Column('timestamp', String(20)),
+    Column('device_id', ForeignKey('devices.id'))
 )
 mapper(Vitals, vitals)
 
