@@ -14,11 +14,11 @@ def shutdown_session(exception=None):
 @app.route('/api/vitals', methods=['POST'])
 def create_vitals():
     data = request.json
-    if not data or ('patient_id' or 'temperature' or 'heart_rate' or 'blood_pressure' or 'respiratory rate' or 'timestamp' or 'device_id') not in data:
+    if not data or ('id' or 'patient_id' or 'temperature' or 'heart_rate' or 'blood_pressure' or 'respiratory rate' or 'timestamp' or 'device_id') not in data:
         return jsonify({'error': 'Invalid input'}), 400
 
     vitals = Vitals(
-        patient_id=data['patient_id'], temperature=data['temperature'], heart_rate=data['heart_rate'],
+        id=data['id'], patient_id=data['patient_id'], temperature=data['temperature'], heart_rate=data['heart_rate'],
         blood_pressure=data['blood_pressure'], respiratory_rate=data['respiratory_rate'], device_id=data['device_id']
     )
     
@@ -30,6 +30,7 @@ def create_vitals():
         return jsonify({'error': str(e)}), 500
     
     return jsonify({
+        'id': vitals.id,
         'patient_id': vitals.patient_id,
         'temperature': vitals.temperature,
         'heart_rate': vitals.heart_rate,
@@ -43,6 +44,7 @@ def create_vitals():
 def get_vitals():
     vitals = db_session.query(Vitals).all()
     return jsonify([{
+        'id': vital.id,
         'patient_id': vital.patient_id,
         'temperature': vital.temperature,
         'heart_rate': vital.heart_rate,
@@ -58,6 +60,7 @@ def get_vitals_by_patient(patient_id):
     if not vitals:
         return jsonify({'error': 'No vitals found for this patient'}), 404
     return jsonify([{
+        'id': vital.id,
         'patient_id': vital.patient_id,
         'temperature': vital.temperature,
         'heart_rate': vital.heart_rate,
@@ -66,6 +69,22 @@ def get_vitals_by_patient(patient_id):
         'timestamp': vital.timestamp,
         'device_id': vital.device_id
     } for vital in vitals]), 200
+
+@app.route('/api/vitals/<id>', method=['GET'])
+def get_vitals_by_id(id):
+    vital = db_session.query(Vitals).filter(Vitals.id == id).first()
+    if not vital:
+        return jsonify({'error': 'No vitals found for this id'}), 404
+    return jsonify([{
+        'id': vital.id,
+        'patient_id': vital.patient_id,
+        'temperature': vital.temperature,
+        'heart_rate': vital.heart_rate,
+        'blood_pressure': vital.blood_pressure,
+        'respiratory_rate': vital.respiratory_rate,
+        'timestamp': vital.timestamp,
+        'device_id': vital.device_id
+    }])
 
 @app.route('/api/alerts', methods=['POST'])
 def create_alert():
