@@ -9,7 +9,7 @@ services:
       - POSTGRES_USERNAME=vitalsapp
       - POSTGRES_PW=test
       - POSTGRES_DATABASE=vitals
-      - POSTGRES_H=localhost
+      - POSTGRES_H=timescaledb
   db:
     image: timescale/timescaledb-ha:pg17
     hostname: timescaledb
