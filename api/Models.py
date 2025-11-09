@@ -1,6 +1,6 @@
-import datetime
+from datetime import datetime
 import uuid
-from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Numeric
+from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Numeric, DateTime
 from sqlalchemy.orm import mapper
 from Database import metadata, db_session
 
@@ -13,7 +13,7 @@ class Vitals(object):
         self.heart_rate = heart_rate
         self.blood_pressure = blood_pressure
         self.respiratory_rate = respiratory_rate
-        self.timestamp = datetime.datetime.now().strftime('%d/%m/%Y %H:%M:%S')
+        self.timestamp = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
         self.device_id = device_id
 
     def __repr__(self):
@@ -21,12 +21,12 @@ class Vitals(object):
 
 vitals = Table('vitals', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
-    Column('patient_id', Integer), #cpf
-    Column('temperature', String(10)),
-    Column('heart_rate', String(10)),
-    Column('blood_pressure', String(10)),
-    Column('respiratory_rate', String(10)),
-    Column('timestamp', String(20)),
+    Column('patient_id', String(14)), #cpf
+    Column('temperature', Float),
+    Column('heart_rate', Integer),
+    Column('blood_pressure', String(6)),
+    Column('respiratory_rate', Float),
+    Column('timestamp', DateTime, default=datetime.now),
     Column('device_id', ForeignKey('devices.id'))
 )
 mapper(Vitals, vitals)
