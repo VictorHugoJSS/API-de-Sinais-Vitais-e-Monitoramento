@@ -31,19 +31,26 @@ def create_vitals():
     try:
         db_session.add(vitals)
         db_session.commit()
+        alerts = vitals.check_vitals_and_generate_alerts()
+        for alert in alerts:
+            db_session.add(alert)
+        db_session.commit()
     except Exception as e:
         db_session.rollback()
         return jsonify({'error': str(e)}), 500
     
     return jsonify({
-        'id': vitals.id,
-        'patient_id': vitals.patient_id,
-        'temperature': vitals.temperature,
-        'heart_rate': vitals.heart_rate,
-        'blood_pressure': vitals.blood_pressure,
-        'respiratory_rate': vitals.respiratory_rate,
-        'timestamp': vitals.timestamp,
-        'device_id': vitals.device_id
+        'vitals': {
+            'id': vitals.id,
+            'patient_id': vitals.patient_id,
+            'temperature': vitals.temperature,
+            'heart_rate': vitals.heart_rate,
+            'blood_pressure': vitals.blood_pressure,
+            'respiratory_rate': vitals.respiratory_rate,
+            'timestamp': vitals.timestamp,
+            'device_id': vitals.device_id
+        },
+        'alerts': [alert.to_dict() for alert in alerts]
     }), 201
 
 @app.route('/api/vitals', methods=['GET'])

@@ -18,6 +18,61 @@ class Vitals(object):
 
     def __repr__(self):
         return f'<Vitals {self.patient_id!r}>'
+    
+    def check_vitals_and_generate_alerts(self):
+        alerts = []
+        if self.temperature < 35.0:
+            alerts.append(Alerts(
+                alert_type='TEMPERATURE_LOW', 
+                message=f'Hipotermia detectada: {self.temperature}°C'
+            ))
+        elif self.temperature > 38.0:
+            alerts.append(Alerts(
+                alert_type='TEMPERATURE_HIGH', 
+                message=f'Febre detectada: {self.temperature}°C'
+            ))
+
+        if self.heart_rate < 50:
+            alerts.append(Alerts(
+                alert_type='HEART_RATE_LOW', 
+                message=f'Frequência cardíaca baixa: {self.heart_rate} bpm'
+            ))
+        elif self.heart_rate > 120:
+            alerts.append(Alerts(
+                alert_type='HEART_RATE_HIGH', 
+                message=f'Frequência cardíaca elevada: {self.heart_rate} bpm'
+            ))
+
+        try:
+            systolic, diastolic = map(int, self.blood_pressure.split('/'))
+            if systolic < 90 or diastolic < 60:
+                alerts.append(Alerts(
+                    alert_type='BLOOD_PRESSURE_LOW', 
+                    message=f'Pressão arterial baixa: {self.blood_pressure} mmHg'
+                ))
+            elif systolic > 140 or diastolic > 90:
+                alerts.append(Alerts(
+                    alert_type='BLOOD_PRESSURE_HIGH', 
+                    message=f'Pressão arterial elevada: {self.blood_pressure} mmHg'
+                ))
+        except (ValueError, AttributeError):
+            alerts.append(Alerts(
+                alert_type='BLOOD_PRESSURE_ERROR', 
+                message='Formato de pressão arterial inválido'
+            ))
+
+        if self.respiratory_rate < 10:
+            alerts.append(Alerts(
+                alert_type='RESPIRATORY_RATE_LOW', 
+                message=f'Frequência respiratória baixa: {self.respiratory_rate} irpm'
+            ))
+        elif self.respiratory_rate > 24:
+            alerts.append(Alerts(
+                alert_type='RESPIRATORY_RATE_HIGH', 
+                message=f'Frequência respiratória elevada: {self.respiratory_rate} irpm'
+            ))
+
+        return alerts
 
 vitals = Table('vitals', metadata,
     Column('id', Integer, primary_key=True, autoincrement=True),
