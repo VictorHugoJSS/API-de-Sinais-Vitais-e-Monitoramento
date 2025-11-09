@@ -7,7 +7,7 @@ from Database import metadata, db_session
 
 class Vitals(object):
     def __init__(self, patient_id, temperature, heart_rate, blood_pressure, respiratory_rate, device_id):
-        self.id = str(uuid.uuid4)
+        self.id = str(uuid.uuid4())
         self.patient_id = patient_id
         self.temperature = temperature
         self.heart_rate = heart_rate
