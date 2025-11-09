@@ -14,8 +14,14 @@ def shutdown_session(exception=None):
 @app.route('/api/vitals', methods=['POST'])
 def create_vitals():
     data = request.json
-    if not data or ('id' or 'patient_id' or 'temperature' or 'heart_rate' or 'blood_pressure' or 'respiratory rate' or 'timestamp' or 'device_id') not in data:
+    field_list = ['id','patient_id','temperature','heart_rate','blood_pressure','respiratory_rate','timestamp','device_id']
+    missing_fields = [field for field in field_list if field not in data]
+    if not data:
         return jsonify({'error': 'Invalid input'}), 400
+    
+    if missing_fields:
+        return jsonify({'error': 'Invalid input',
+        'missing_fields': missing_fields}), 400
 
     vitals = Vitals(
         id=data['id'], patient_id=data['patient_id'], temperature=data['temperature'], heart_rate=data['heart_rate'],
@@ -70,7 +76,7 @@ def get_vitals_by_patient(patient_id):
         'device_id': vital.device_id
     } for vital in vitals]), 200
 
-@app.route('/api/vitals/<id>', method=['GET'])
+@app.route('/api/vitals/<id>', methods=['GET'])
 def get_vitals_by_id(id):
     vital = db_session.query(Vitals).filter(Vitals.id == id).first()
     if not vital:
@@ -84,7 +90,7 @@ def get_vitals_by_id(id):
         'respiratory_rate': vital.respiratory_rate,
         'timestamp': vital.timestamp,
         'device_id': vital.device_id
-    }])
+    }]), 200
 
 @app.route('/api/alerts', methods=['POST'])
 def create_alert():
