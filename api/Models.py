@@ -2,7 +2,7 @@ import datetime
 import uuid
 from sqlalchemy import Table, Column, Integer, String, ForeignKey, Float, Numeric
 from sqlalchemy.orm import mapper
-from .Database import metadata, db_session
+from Database import metadata, db_session
 
 
 class Vitals(object):

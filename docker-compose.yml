@@ -1,0 +1,21 @@
+services:
+  api:
+    build: .
+    ports:
+      - 5000:5000
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USERNAME=vitalsapp
+      - POSTGRES_PW=test
+      - POSTGRES_DATABASE=vitals
+      - POSTGRES_H=localhost
+  db:
+    image: timescale/timescaledb-ha:pg17
+    hostname: timescaledb
+    environment:
+      - POSTGRES_PASSWORD=test
+      - POSTGRES_USER=vitalsapp
+      - POSTGRES_DB=vitals
+    ports:
+      - 5432:5432
