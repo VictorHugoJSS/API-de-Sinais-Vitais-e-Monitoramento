@@ -14,4 +14,4 @@ ENV FLASK_APP=Api.py
 ENV FLASK_RUN_HOST=0.0.0.0
 EXPOSE 5000
 
-CMD ["python", "Api.py"]
+CMD ["flask", "run"]
