@@ -33,8 +33,9 @@ def create_vitals():
         cursor.execute("INSERT INTO vitals (cpf, temperature, heart_rate, blood_pressure, respiratory_rate) VALUES (%s,%s,%s,%s,%s)", (cpf,temperature,heart_rate,blood_pressure,respiratory_rate))
         conn.commit()
         alerts = check_vitals_and_generate_alerts(temperature,heart_rate,blood_pressure,respiratory_rate)
+        cursor.execute("SELECT CURRENT_DATE")
         for alert in alerts:
-            cursor.execute("INSERT INTO alerts (alert_type,message) VALUES (%s,%s)", (alert[0],alert[1]))
+            cursor.execute("INSERT INTO alerts (alert_type,message,timestamp) VALUES (%s,%s,%s)", (alert[0],alert[1],cursor.fetchall()[0]))
         conn.commit()
     except Error as e:
         return jsonify({'error': str(e)}), 500
@@ -44,13 +45,13 @@ def create_vitals():
     cursor.execute("SELECT CURRENT_TIMESTAMP")
     return jsonify({
         'vitals': {
-            'id': id,
+            'id': id[0][0],
             'cpf': cpf,
             'temperature': temperature,
             'heart_rate': heart_rate,
             'blood_pressure': blood_pressure,
             'respiratory_rate': respiratory_rate,
-            'timestamp': cursor.fetchall()
+            'timestamp': cursor.fetchall()[0]
         },
         'alerts': [{
             'alert_type':alert[0],
@@ -98,12 +99,12 @@ def get_vitals_by_id(id):
     if not vital:
         return jsonify({'error': 'No vitals found for this id'}), 404
     return jsonify([{
-        'id': vital[0],
-        'patient_id': vital[1],
-        'temperature': vital[2],
-        'heart_rate': vital[3],
-        'blood_pressure': vital[4],
-        'respiratory_rate': vital[5],
+        'id': vital[0][0],
+        'cpf': vital[0][1],
+        'temperature': vital[0][2],
+        'heart_rate': vital[0][3],
+        'blood_pressure': vital[0][4],
+        'respiratory_rate': vital[0][5],
     }]), 200
 
 @app.route('/api/alerts', methods=['POST'])
@@ -120,7 +121,8 @@ def create_alert():
     
     try:
         cursor.execute("SELECT CURRENT_TIMESTAMP")
-        cursor.execute("INSERT INTO alerts (alert_type,message,timestamp) VALUES (%s,%s)", (alert_type,message, cursor.fetchall()))
+        date = cursor.fetchall()[0]
+        cursor.execute("INSERT INTO alerts (alert_type,message,timestamp) VALUES (%s,%s,%s)", (alert_type,message, date))
         conn.commit()
     except Error as e:
         return jsonify({'error': str(e)}), 500
@@ -128,10 +130,10 @@ def create_alert():
     cursor.execute("SELECT id,timestamp from alerts where alert_type=%s", (alert_type,))
     alert = cursor.fetchall()
     return jsonify({
-        'alert_id': alert[0],
+        'alert_id': alert[0][0],
         'alert_type': alert_type,
         'message': message,
-        'timestamp': alert[1]
+        'timestamp': alert[0][1]
     }), 201
 
 @app.route('/api/alerts', methods=['GET'])
@@ -166,7 +168,7 @@ def response():
         blood_pressure = response.get("blood_pressure")
         respiratory_rate = int(response.get("respiratory_rate"))
         
-        cursor.execute("""INSERT INTO devices (cpf_pessoa,data,Devicename,Devicemodel,type,heart_rate,temperature,blood_pressure,respiratory_rate) VALUES (%s, %s, %s,%s, %s, %s,%s, %s, %s)""",(cpf,data, devicename,deviceModel,deviceType,heart_rate,temperature,blood_pressure,respiratory_rate))
+        cursor.execute("""INSERT INTO devices (cpf_pessoa,data,Devicename,Devicemodel,type,heart_rate,temperature,blood_pressure,respiratory_rate) VALUES (%s, %s, %s,%s, %s, %s,%s, %s, %s)""",(cpf,data[0], devicename,deviceModel,deviceType,heart_rate,temperature,blood_pressure,respiratory_rate))
         conn.commit()
         return jsonify({"Result": "Info saved in database"}), 200
         

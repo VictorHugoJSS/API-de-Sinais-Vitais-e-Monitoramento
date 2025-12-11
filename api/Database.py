@@ -64,52 +64,47 @@ def init_db():
 def check_vitals_and_generate_alerts(temperature, heart_rate, blood_pressure,respiratory_rate):
         alerts = []
         if temperature < 35.0:
-            alerts.append(
-                alert_type='TEMPERATURE_LOW', 
-                message=f'Hipotermia detectada: {temperature}°C'
-            )
+            alert_type='TEMPERATURE_LOW', 
+            message=f'Hipotermia detectada: {temperature}°C'
+            alerts.append((alert_type,message))
         elif temperature > 38.0:
-            alerts.append(alert_type='TEMPERATURE_HIGH',message=f'Febre detectada: {temperature}°C')
+            alert_type='TEMPERATURE_HIGH',
+            message=f'Febre detectada: {temperature}°C'
+            alerts.append((alert_type,message))
 
         if heart_rate < 50:
-            alerts.append(
-                alert_type='HEART_RATE_LOW', 
-                message=f'Frequência cardíaca baixa: {heart_rate} bpm')
+            alert_type='HEART_RATE_LOW', 
+            message=f'Frequência cardíaca baixa: {heart_rate} bpm'
+            alerts.append((alert_type,message))
         elif heart_rate > 120:
-            alerts.append(
-                alert_type='HEART_RATE_HIGH', 
-                message=f'Frequência cardíaca elevada: {heart_rate} bpm'
-            )
+            alert_type='HEART_RATE_HIGH', 
+            message=f'Frequência cardíaca elevada: {heart_rate} bpm'
+            alerts.append((alert_type,message))
 
         try:
             systolic, diastolic = blood_pressure.split('/')
             systolic = int(systolic)
             diastolic = int(diastolic)
             if systolic < 90 or diastolic < 60:
-                alerts.append(
-                    alert_type='BLOOD_PRESSURE_LOW', 
-                    message=f'Pressão arterial baixa: {blood_pressure} mmHg'
-                )
+                alert_type='BLOOD_PRESSURE_LOW', 
+                message=f'Pressão arterial baixa: {blood_pressure} mmHg'
+                alerts.append(alert_type,message)
             elif systolic > 140 or diastolic > 90:
-                alerts.append(
-                    alert_type='BLOOD_PRESSURE_HIGH', 
-                    message=f'Pressão arterial elevada: {blood_pressure} mmHg'
-                )
+                alert_type='BLOOD_PRESSURE_HIGH', 
+                message=f'Pressão arterial elevada: {blood_pressure} mmHg'
+                alerts.append((alert_type,message))
         except (ValueError, AttributeError):
-            alerts.append(
-                alert_type='BLOOD_PRESSURE_ERROR', 
-                message='Formato de pressão arterial inválido'
-            )
+            alert_type='BLOOD_PRESSURE_ERROR', 
+            message='Formato de pressão arterial inválido'
+            alerts.append((alert_type,message))
 
         if respiratory_rate < 10:
-            alerts.append(
-                alert_type='RESPIRATORY_RATE_LOW', 
-                message=f'Frequência respiratória baixa: {respiratory_rate} irpm'
-            )
-        """elif respiratory_rate > 24:
-            alerts.append(
-                alert_type='RESPIRATORY_RATE_HIGH', 
-                message=f'Frequência respiratória elevada: {respiratory_rate} irpm'
-            )"""
+            alert_type='RESPIRATORY_RATE_LOW', 
+            message=f'Frequência respiratória baixa: {respiratory_rate} irpm'
+            alerts.append((alert_type,message))
+        elif respiratory_rate > 24:
+            alert_type='RESPIRATORY_RATE_HIGH', 
+            message=f'Frequência respiratória elevada: {respiratory_rate} irpm'
+            alerts.append((alert_type, message))
 
         return alerts
